@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invoice - CPLUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <style>
+    body {
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .invoice-paper {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      width: 100%;
+      max-width: 600px;
+      padding: 4rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--fg);
+    }
+    .invoice-header {
+      text-align: center;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 2rem;
+      margin-bottom: 2rem;
+    }
+    .invoice-brand {
+      font-family: var(--font-display);
+      font-size: 36px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+    .invoice-meta {
+      font-size: 10px;
+      color: var(--fg2);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .invoice-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+      font-size: 12px;
+    }
+    .invoice-label {
+      color: var(--fg2);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .invoice-val {
+      font-weight: 700;
+    }
+    .customer-box {
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      margin-bottom: 2.5rem;
+      font-size: 12px;
+      background: var(--bg3);
+    }
+    .customer-box p {
+      margin-bottom: 4px;
+    }
+    .items-table {
+      width: 100%;
+      font-size: 12px;
+      margin-bottom: 2.5rem;
+      border-collapse: collapse;
+    }
+    .items-table th {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+      text-align: left;
+      color: var(--fg2);
+      font-weight: normal;
+      text-transform: uppercase;
+    }
+    .items-table th:last-child {
+      text-align: right;
+    }
+    .items-table td {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .items-table td:last-child {
+      text-align: right;
+    }
+    .item-name {
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .item-size {
+      color: var(--fg2);
+      font-size: 10px;
+    }
+    .totals {
+      border-top: 1px dashed var(--border);
+      padding-top: 2rem;
+      margin-bottom: 2rem;
+      font-size: 12px;
+    }
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .total-final {
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+      margin-top: 1rem;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .invoice-footer {
+      text-align: center;
+      border-top: 1px dashed var(--border);
+      padding-top: 2rem;
+      font-size: 10px;
+      color: var(--fg2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .btn-back {
+      display: inline-block;
+      margin-top: 2rem;
+      border: 1px solid var(--border);
+      color: var(--fg);
+      text-decoration: none;
+      padding: 12px 24px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+    .btn-back:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+    @media (max-width: 600px) {
+      .invoice-paper { padding: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="invoice-paper">
+    
+    <div class="invoice-header">
+      <div class="invoice-brand">CPLUS</div>
+      <div class="invoice-meta">Purwakarta, ID — Premium E-Commerce</div>
+      <div class="invoice-meta" style="margin-top:4px;">Receipt / Invoice</div>
+    </div>
+
+    <div class="invoice-row">
+      <div>
+        <div class="invoice-label">Order ID</div>
+        <div class="invoice-val" th:text="'#INV-' + ${#numbers.formatInteger(order.id, 6)}">#INV-000000</div>
+      </div>
+      <div style="text-align: right;">
+        <div class="invoice-label">Date</div>
+        <div class="invoice-val" th:text="${#temporals.format(order.orderDate, 'dd MMM yyyy, HH:mm')}">01 Jan 2024</div>
+      </div>
+    </div>
+
+    <div class="customer-box">
+      <div class="invoice-label">Billed To:</div>
+      <p class="invoice-val" style="text-transform:uppercase;" th:text="${order.fullName}">John Doe</p>
+      <p th:text="${order.phone}">08123456789</p>
+      <p th:text="${order.address}" style="margin-top: 8px; color:var(--fg2);">Jalan Contoh No 123</p>
+    </div>
+
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th style="text-align:center;">Qty</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="item : ${order.items}">
+          <td>
+            <div class="item-name" th:text="${item.product.name}">T-Shirt</div>
+            <div class="item-size" th:text="'Size: ' + ${item.size}">Size: S</div>
+          </td>
+          <td style="text-align:center;" th:text="${item.quantity}">1</td>
+          <td th:text="${#numbers.formatDecimal(item.getSubtotal(), 0, 'COMMA', 0, 'POINT')}">100,000</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <div class="total-row">
+        <span class="invoice-label">Subtotal</span>
+        <span th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">0</span>
+      </div>
+      <div class="total-row">
+        <span class="invoice-label">Shipping</span>
+        <span>0</span>
+      </div>
+      <div class="total-final">
+        <span>TOTAL PAID</span>
+        <span th:text="'Rp ' + ${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')}">Rp 0</span>
+      </div>
+    </div>
+
+    <div style="text-align:center; font-size:12px; margin-bottom: 2rem;">
+      <div class="invoice-label">Payment Method</div>
+      <div class="invoice-val" style="text-transform:uppercase;" th:text="${order.paymentMethod}">QRIS</div>
+    </div>
+
+    <div class="invoice-footer">
+      <p>Thank you for your purchase.</p>
+      <a th:href="@{/}" class="btn-back">Back to Store</a>
+    </div>
+    
+  </div>
+
+</body>
+</html>

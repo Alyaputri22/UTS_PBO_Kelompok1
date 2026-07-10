@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - CPLUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <style>
+    .admin-header {
+      padding: 10rem 2rem 4rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-title-wrap h1 {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 6vw, 72px);
+      letter-spacing: 4px;
+      color: var(--fg);
+      line-height: 1;
+    }
+    .admin-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    .admin-table-wrap {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      overflow-x: auto;
+    }
+    .admin-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    .admin-table th {
+      padding: 1.5rem;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--fg2);
+      border-bottom: 1px solid var(--border);
+      font-weight: 500;
+    }
+    .admin-table td {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover { background: var(--bg3); }
+    
+    .prod-img {
+      width: 64px;
+      height: 84px;
+      object-fit: cover;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+    }
+    .prod-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+      color: var(--fg);
+    }
+    .prod-desc {
+      font-size: 12px;
+      color: var(--fg2);
+      max-width: 300px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .prod-price {
+      font-size: 14px;
+      color: var(--accent);
+    }
+    
+    .action-links {
+      display: flex;
+      gap: 1rem;
+    }
+    .btn-edit {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 6px 12px;
+      border: 1px solid var(--accent);
+      transition: all 0.2s;
+    }
+    .btn-edit:hover { background: var(--accent); color: #000; }
+    
+    .btn-delete {
+      color: #e74c3c;
+      text-decoration: none;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 6px 12px;
+      border: 1px solid #e74c3c;
+      transition: all 0.2s;
+    }
+    .btn-delete:hover { background: #e74c3c; color: #fff; }
+    
+    @media (max-width: 768px) {
+      .admin-header { flex-direction: column; align-items: flex-start; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex; align-items:center; gap:2rem;">
+    <a th:href="@{/}" class="nav-logo">CPLUS<span></span></a>
+    <span style="font-size:11px; color:var(--fg2); text-transform:uppercase; letter-spacing:2px; border-left:1px solid var(--border); padding-left:2rem;">
+      Hi, <span sec:authentication="name">Admin</span>
+    </span>
+  </div>
+  
+  <div class="nav-right">
+    <a th:href="@{/}" style="color:var(--fg2);text-decoration:none;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Back to Shop</a>
+    <form th:action="@{/logout}" method="post" style="margin:0;">
+      <button type="submit" style="background:none;border:none;color:var(--fg2);font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<header class="admin-header">
+  <div class="admin-title-wrap">
+    <div class="hero-eyebrow">Administration</div>
+    <h1>PRODUCT CATALOG</h1>
+  </div>
+  <a th:href="@{/admin/product/add}" class="btn-primary">+ Add New Product</a>
+</header>
+
+<main class="admin-container">
+  
+  <div class="admin-table-wrap">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th style="width: 80px;">Image</th>
+          <th>Name & Description</th>
+          <th>Price</th>
+          <th style="text-align: right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:if="${#lists.isEmpty(products)}">
+          <td colspan="4" style="text-align:center; padding:4rem 2rem; color:var(--fg2); font-size:13px; text-transform:uppercase; letter-spacing:1px;">
+            No products found. Click "Add New Product" to get started.
+          </td>
+        </tr>
+        
+        <tr th:each="product : ${products}">
+          <td>
+            <img th:src="${product.imageUrl != null && !product.imageUrl.isEmpty() ? product.imageUrl : '/img/tshirt_black.png'}" alt="Image" class="prod-img" />
+          </td>
+          <td>
+            <div class="prod-name" th:text="${product.name}">Product Name</div>
+            <div class="prod-desc" th:text="${product.description}">Description...</div>
+          </td>
+          <td class="prod-price" th:text="'Rp ' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 0, 'POINT')}">Rp 0</td>
+          <td>
+            <div class="action-links" style="justify-content: flex-end;">
+              <a th:href="@{/admin/product/edit/{id}(id=${product.id})}" class="btn-edit">Edit</a>
+              <a th:href="@{/admin/product/delete/{id}(id=${product.id})}" class="btn-delete" onclick="return confirm('Are you sure you want to delete this product?');">Delete</a>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-bottom">
+    <p>&copy; 2026 CPLUS OFFICIAL. ALL RIGHTS RESERVED.</p>
+  </div>
+</footer>
+
+</body>
+</html>

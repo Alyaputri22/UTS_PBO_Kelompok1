@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout - CPLUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <style>
+    .checkout-page-header {
+      padding: 10rem 2rem 4rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .checkout-page-title {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 8vw, 96px);
+      letter-spacing: 4px;
+      color: var(--fg);
+    }
+    .checkout-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 4rem;
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      align-items: start;
+    }
+    .checkout-form-section {
+      background: var(--bg2);
+      padding: 3rem;
+      border: 1px solid var(--border);
+    }
+    .form-heading {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 2px;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      color: var(--fg2);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      padding: 14px 20px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      border-color: var(--accent);
+    }
+    
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .radio-label {
+      display: flex;
+      align-items: flex-start;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .radio-label:hover {
+      border-color: var(--fg2);
+      background: var(--bg3);
+    }
+    .radio-label input[type="radio"] {
+      margin-top: 4px;
+      margin-right: 1.5rem;
+      accent-color: var(--accent);
+    }
+    .radio-text-main {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: var(--fg);
+      margin-bottom: 4px;
+    }
+    .radio-text-sub {
+      display: block;
+      font-size: 11px;
+      color: var(--fg2);
+    }
+
+    .checkout-summary {
+      background: var(--bg2);
+      padding: 3rem;
+      border: 1px solid var(--border);
+      position: sticky;
+      top: 100px;
+    }
+    .summary-items {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 1rem;
+    }
+    .summary-item {
+      display: flex;
+      gap: 1rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .summary-item img {
+      width: 60px;
+      height: 80px;
+      object-fit: cover;
+      background: var(--bg3);
+    }
+    .summary-item-info {
+      flex: 1;
+    }
+    .summary-item-name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .summary-item-meta {
+      font-size: 10px;
+      color: var(--fg2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .summary-item-price {
+      font-size: 14px;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    @media (max-width: 900px) {
+      .checkout-container { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a th:href="@{/}" class="nav-logo">CPLUS<span></span></a>
+  <div class="nav-right">
+    <div sec:authorize="isAuthenticated()" style="color:var(--fg); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-right:15px;">
+      Halo <span sec:authentication="name" style="color:var(--accent);">User</span>!
+    </div>
+    <a th:href="@{/cart}" style="color:var(--fg2);text-decoration:none;font-size:12px;letter-spacing:2px;text-transform:uppercase;">Back to Cart</a>
+  </div>
+</nav>
+
+<header class="checkout-page-header">
+  <div class="hero-eyebrow">Secure Payment</div>
+  <h1 class="checkout-page-title">CHECKOUT</h1>
+</header>
+
+<main class="checkout-container">
+  
+  <div class="checkout-form-section">
+    <form th:action="@{/checkout/process}" method="post">
+      
+      <h2 class="form-heading">Shipping Information</h2>
+      <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="fullName" class="form-control" required />
+      </div>
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" class="form-control" required />
+      </div>
+      <div class="form-group" style="margin-bottom: 3rem;">
+        <label for="address">Complete Address</label>
+        <textarea id="address" name="address" rows="4" class="form-control" required></textarea>
+      </div>
+
+      <h2 class="form-heading">Payment Method</h2>
+      <div class="radio-group">
+        <label class="radio-label">
+          <input type="radio" name="paymentMethod" value="QRIS" required />
+          <div>
+            <span class="radio-text-main">QRIS (E-Wallet)</span>
+            <span class="radio-text-sub">Pay easily using GoPay, OVO, Dana, ShopeePay, etc.</span>
+          </div>
+        </label>
+        <label class="radio-label">
+          <input type="radio" name="paymentMethod" value="Bank Transfer" required />
+          <div>
+            <span class="radio-text-main">Bank Transfer (Virtual Account)</span>
+            <span class="radio-text-sub">BCA, Mandiri, BNI, BRI.</span>
+          </div>
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary" style="width: 100%; text-align: center;">Place Order</button>
+    </form>
+  </div>
+
+  <div class="checkout-summary">
+    <h2 class="form-heading" style="font-size: 24px;">Order Summary</h2>
+    
+    <div class="summary-items">
+      <div th:each="item : ${cartItems}" class="summary-item">
+        <img th:src="${item.product.imageUrl != null && !item.product.imageUrl.isEmpty() ? item.product.imageUrl : '/img/tshirt_black.png'}" alt="" />
+        <div class="summary-item-info">
+          <div class="summary-item-name" th:text="${item.product.name}">Product Name</div>
+          <div class="summary-item-meta" th:text="'Size: ' + ${item.size} + ' | Qty: ' + ${item.quantity}">Size: S | Qty: 1</div>
+          <div class="summary-item-price" th:text="'Rp ' + ${#numbers.formatDecimal(item.getSubtotal(), 0, 'COMMA', 0, 'POINT')}">Rp 0</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; margin-bottom:1rem; font-size:12px; color:var(--fg2); text-transform:uppercase; letter-spacing:1px;">
+      <span>Subtotal</span>
+      <span th:text="'Rp ' + ${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')}">Rp 0</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-bottom:2rem; font-size:12px; color:var(--fg2); text-transform:uppercase; letter-spacing:1px;">
+      <span>Shipping</span>
+      <span>Free</span>
+    </div>
+    <div style="display:flex; justify-content:space-between; padding-top:1.5rem; border-top:1px solid var(--border); font-family:var(--font-display); font-size:24px; letter-spacing:2px; color:var(--accent);">
+      <span>Total</span>
+      <span th:text="'Rp ' + ${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')}">Rp 0</span>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-bottom">
+    <p>&copy; 2026 CPLUS OFFICIAL. ALL RIGHTS RESERVED.</p>
+  </div>
+</footer>
+
+</body>
+</html>

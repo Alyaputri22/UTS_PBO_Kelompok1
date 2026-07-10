@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up - CPLUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <style>
+    body {
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .auth-box {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 4rem 3rem;
+      text-align: center;
+    }
+    .auth-logo {
+      font-family: var(--font-display);
+      font-size: 40px;
+      letter-spacing: 4px;
+      color: var(--fg);
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 2rem;
+    }
+    .auth-logo span { color: var(--accent); }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      color: var(--fg2);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      padding: 14px 20px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      border-color: var(--accent2);
+    }
+    
+    .alert-error {
+      background: rgba(231, 76, 60, 0.1);
+      border: 1px solid #e74c3c;
+      color: #e74c3c;
+      padding: 12px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1.5rem;
+    }
+    
+    .auth-footer {
+      margin-top: 2.5rem;
+      font-size: 12px;
+      color: var(--fg2);
+    }
+    .auth-footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-left: 8px;
+    }
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-box">
+    <a th:href="@{/}" class="auth-logo">CPLUS<span></span></a>
+    
+    <div th:if="${param.error}" class="alert-error">
+      Username is already taken!
+    </div>
+
+    <form th:action="@{/register}" method="post">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" class="form-control" required autofocus />
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" class="form-control" required />
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" class="form-control" required />
+      </div>
+      <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem;">Sign Up</button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account? <a th:href="@{/login}">Log In</a>
+    </div>
+  </div>
+
+</body>
+</html>

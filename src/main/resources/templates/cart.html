@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopping Cart - CPLUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <style>
+    /* Specific styles for cart.html */
+    .cart-page-header {
+      padding: 10rem 2rem 4rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-page-title {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 8vw, 96px);
+      letter-spacing: 4px;
+      color: var(--fg);
+    }
+    .cart-container {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 4rem;
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      align-items: start;
+    }
+    .cart-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    .cart-row {
+      display: flex;
+      gap: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .cart-row-img {
+      width: 120px;
+      aspect-ratio: 3/4;
+      background: var(--bg2);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cart-row-img img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .cart-row-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .cart-row-name {
+      font-family: var(--font-display);
+      font-size: 24px;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .cart-row-meta {
+      font-size: 11px;
+      color: var(--fg2);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 12px;
+    }
+    .cart-row-price {
+      font-size: 16px;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+    .btn-remove {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--fg2);
+      padding: 8px 16px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      align-self: flex-start;
+    }
+    .btn-remove:hover {
+      border-color: var(--fg);
+      color: var(--fg);
+    }
+    .cart-summary {
+      background: var(--bg2);
+      padding: 3rem;
+      border: 1px solid var(--border);
+      position: sticky;
+      top: 100px;
+    }
+    .summary-title {
+      font-family: var(--font-display);
+      font-size: 28px;
+      letter-spacing: 2px;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+    }
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      font-size: 13px;
+      color: var(--fg2);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-display);
+      font-size: 24px;
+      letter-spacing: 2px;
+      color: var(--accent);
+    }
+    .alert-success {
+      background: rgba(46, 204, 113, 0.1);
+      border: 1px solid #2ecc71;
+      color: #2ecc71;
+      padding: 1rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+    .cart-empty-state {
+      text-align: center;
+      padding: 6rem 0;
+      grid-column: 1 / -1;
+    }
+    .cart-empty-state p {
+      font-size: 14px;
+      color: var(--fg2);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    
+    @media (max-width: 900px) {
+      .cart-container { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .cart-row { flex-direction: column; }
+      .cart-row-img { width: 100%; aspect-ratio: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a th:href="@{/}" class="nav-logo">CPLUS<span></span></a>
+  <ul class="nav-links">
+    <li><a th:href="@{/}">Shop</a></li>
+    <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Login</a></li>
+    <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin}">Admin</a></li>
+    <li sec:authorize="isAuthenticated()">
+       <form th:action="@{/logout}" method="post" style="display:inline; margin:0;">
+          <button type="submit" style="background:none; border:none; color:var(--fg2); font-size:12px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:var(--font-body); padding:0;">Logout</button>
+       </form>
+    </li>
+  </ul>
+  <div class="nav-right">
+    <div sec:authorize="isAuthenticated()" style="color:var(--fg); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-right:15px;">
+      Halo <span sec:authentication="name" style="color:var(--accent);">User</span>!
+    </div>
+    <a sec:authorize="!hasRole('ADMIN')" th:href="@{/cart}" class="nav-cart" aria-label="Keranjang" style="text-decoration:none;">
+      🛒
+      <span class="cart-count" th:text="${cartItemCount != null ? cartItemCount : '0'}">0</span>
+    </a>
+  </div>
+</nav>
+
+<header class="cart-page-header">
+  <div class="hero-eyebrow">Checkout</div>
+  <h1 class="cart-page-title">YOUR CART</h1>
+</header>
+
+<main class="cart-container">
+  
+  <div th:if="${param.checkoutSuccess}" class="alert-success" style="grid-column: 1 / -1;">
+    Checkout successful! Thank you for shopping with C+ Official.
+  </div>
+
+  <div th:if="${#lists.isEmpty(cartItems)}" class="cart-empty-state">
+    <p>Your shopping cart is currently empty.</p>
+    <a th:href="@{/}" class="btn-primary">Continue Shopping</a>
+  </div>
+
+  <div th:if="${!#lists.isEmpty(cartItems)}" class="cart-list">
+    <div th:each="item : ${cartItems}" class="cart-row">
+      <div class="cart-row-img">
+        <img th:src="${item.product.imageUrl != null && !item.product.imageUrl.isEmpty() ? item.product.imageUrl : '/img/tshirt_black.png'}" alt="Product Image" />
+      </div>
+      <div class="cart-row-info">
+        <h3 class="cart-row-name" th:text="${item.product.name}">Product Name</h3>
+        <p class="cart-row-meta" th:text="'Size: ' + ${item.size} + ' &nbsp;|&nbsp; Qty: ' + ${item.quantity}">Size: S</p>
+        <p class="cart-row-price" th:text="'Rp ' + ${#numbers.formatDecimal(item.getSubtotal(), 0, 'COMMA', 0, 'POINT')}">Rp 0</p>
+        <form th:action="@{/cart/remove/{id}(id=${item.id})}" method="post">
+          <button type="submit" class="btn-remove">Remove</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div th:if="${!#lists.isEmpty(cartItems)}" class="cart-summary">
+    <h2 class="summary-title">Summary</h2>
+    <div class="summary-row">
+      <span>Subtotal</span>
+      <span th:text="'Rp ' + ${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')}">Rp 0</span>
+    </div>
+    <div class="summary-row">
+      <span>Shipping</span>
+      <span>Free</span>
+    </div>
+    <div class="summary-total">
+      <span>Total</span>
+      <span th:text="'Rp ' + ${#numbers.formatDecimal(total, 0, 'COMMA', 0, 'POINT')}">Rp 0</span>
+    </div>
+    <a th:href="@{/checkout}" class="btn-primary" style="width: 100%; text-align: center; margin-top: 2rem;">Proceed to Checkout</a>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-bottom">
+    <p>&copy; 2026 CPLUS OFFICIAL. ALL RIGHTS RESERVED.</p>
+  </div>
+</footer>
+
+</body>
+</html>

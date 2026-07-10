@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Form - Admin CPLUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <style>
+    .admin-header {
+      padding: 10rem 2rem 4rem;
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-title-wrap h1 {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5vw, 64px);
+      letter-spacing: 4px;
+      color: var(--fg);
+      line-height: 1;
+    }
+    
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    .form-box {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 3rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      color: var(--fg2);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      color: var(--fg);
+      padding: 14px 20px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-control:focus {
+      border-color: var(--accent);
+    }
+    .form-control[type="file"] {
+      padding: 11px 20px;
+      font-size: 12px;
+      color: var(--fg2);
+      cursor: pointer;
+    }
+    
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+    }
+    
+    .section-divider {
+      margin: 3rem 0 2rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--font-display);
+      font-size: 24px;
+      letter-spacing: 2px;
+    }
+    
+    .btn-cancel {
+      display: inline-block;
+      text-align: center;
+      border: 1px solid var(--border);
+      color: var(--fg2);
+      text-decoration: none;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      padding: 10px 24px;
+      transition: all 0.2s;
+    }
+    .btn-cancel:hover {
+      border-color: var(--fg);
+      color: var(--fg);
+    }
+    
+    @media (max-width: 600px) {
+      .grid-2, .grid-4 { grid-template-columns: 1fr; }
+      .form-box { padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex; align-items:center; gap:2rem;">
+    <a th:href="@{/}" class="nav-logo">CPLUS<span></span></a>
+  </div>
+  <div class="nav-right">
+    <form th:action="@{/logout}" method="post" style="margin:0;">
+      <button type="submit" style="background:none;border:none;color:var(--fg2);font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;">Logout</button>
+    </form>
+  </div>
+</nav>
+
+<header class="admin-header">
+  <div class="admin-title-wrap">
+    <div class="hero-eyebrow" th:text="${product.id != null ? 'Edit Mode' : 'Creation Mode'}">Mode</div>
+    <h1 th:text="${product.id != null ? 'EDIT PRODUCT' : 'NEW PRODUCT'}">PRODUCT FORM</h1>
+  </div>
+</header>
+
+<main class="form-container">
+  
+  <div class="form-box">
+    <form th:action="@{/admin/product/save}" th:object="${product}" method="post" enctype="multipart/form-data">
+      
+      <input type="hidden" th:field="*{id}" />
+
+      <div class="form-group">
+        <label for="name">Product Name</label>
+        <input type="text" id="name" th:field="*{name}" class="form-control" required />
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price (Rp)</label>
+        <input type="number" id="price" th:field="*{price}" class="form-control" required />
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="imageFile">Front Image (1:1 Ratio)</label>
+          <div th:if="${product.id != null}" style="font-size:10px; color:var(--fg2); margin-bottom:8px; font-style:italic;">(Leave empty to keep current image)</div>
+          <input type="file" id="imageFile" name="imageFile" accept="image/*" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label for="backImageFile">Back Image (Optional)</label>
+          <div th:if="${product.id != null}" style="font-size:10px; color:var(--fg2); margin-bottom:8px; font-style:italic;">(Leave empty to keep current image)</div>
+          <input type="file" id="backImageFile" name="backImageFile" accept="image/*" class="form-control" />
+        </div>
+      </div>
+
+      <h2 class="section-divider">Inventory Management</h2>
+      <div class="grid-4">
+        <div class="form-group">
+          <label for="stockS">Size S</label>
+          <input type="number" id="stockS" th:field="*{stockS}" min="0" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label for="stockM">Size M</label>
+          <input type="number" id="stockM" th:field="*{stockM}" min="0" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label for="stockL">Size L</label>
+          <input type="number" id="stockL" th:field="*{stockL}" min="0" class="form-control" required />
+        </div>
+        <div class="form-group">
+          <label for="stockXL">Size XL</label>
+          <input type="number" id="stockXL" th:field="*{stockXL}" min="0" class="form-control" required />
+        </div>
+      </div>
+
+      <h2 class="section-divider">Details</h2>
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" th:field="*{description}" rows="4" class="form-control"></textarea>
+      </div>
+
+      <div style="display:flex; gap:1rem; margin-top:3rem;">
+        <button type="submit" class="btn-primary" style="flex:1; text-align:center;">Save Product</button>
+        <a th:href="@{/admin}" class="btn-cancel" style="display:flex; align-items:center;">Cancel</a>
+      </div>
+      
+    </form>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-bottom" style="max-width:800px;">
+    <p>&copy; 2026 CPLUS OFFICIAL. ALL RIGHTS RESERVED.</p>
+  </div>
+</footer>
+
+</body>
+</html>

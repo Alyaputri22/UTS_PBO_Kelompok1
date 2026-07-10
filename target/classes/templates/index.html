@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="id" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPLUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <a th:href="@{/}" class="nav-logo">CPLUS<span></span></a>
+  <ul class="nav-links">
+    <li><a href="#produk">Shop</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#newsletter">Journal</a></li>
+    <li><a href="#footer">Contact</a></li>
+    
+    <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Login</a></li>
+    <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin}">Admin</a></li>
+    <li sec:authorize="isAuthenticated()">
+       <form th:action="@{/logout}" method="post" style="display:inline; margin:0;">
+          <button type="submit" style="background:none; border:none; color:var(--fg2); font-size:12px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; font-family:var(--font-body); padding:0;">Logout</button>
+       </form>
+    </li>
+  </ul>
+  <div class="nav-right">
+    <div sec:authorize="isAuthenticated()" style="color:var(--fg); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-right:15px;">
+      Halo <span sec:authentication="name" style="color:var(--accent);">User</span>!
+    </div>
+    <a sec:authorize="!hasRole('ADMIN')" th:href="@{/cart}" class="nav-cart" aria-label="Keranjang" style="text-decoration:none;">
+      🛒
+      <span class="cart-count" id="cartCount" th:text="${cartItemCount != null ? cartItemCount : '0'}">0</span>
+    </a>
+    <button class="hamburger" id="menuBtn" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#produk" onclick="closeMobileMenu()">Shop</a>
+  <a href="#about" onclick="closeMobileMenu()">About</a>
+  <a href="#newsletter" onclick="closeMobileMenu()">Journal</a>
+  <a href="#footer" onclick="closeMobileMenu()">Contact</a>
+  <a th:href="@{/login}" sec:authorize="!isAuthenticated()" onclick="closeMobileMenu()">Login</a>
+  <a th:href="@{/admin}" sec:authorize="hasRole('ADMIN')" onclick="closeMobileMenu()">Admin</a>
+  <button sec:authorize="isAuthenticated()" onclick="document.getElementById('logoutFormMobile').submit(); closeMobileMenu();">Logout</button>
+  <form id="logoutFormMobile" th:action="@{/logout}" method="post" style="display:none;"></form>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-line"></div>
+  <div class="hero-content">
+    <h1 class="hero-title">CPLUS<br><em></em></h1>
+    <p class="hero-sub">Touch Of Cplus.</p>
+    <div class="hero-cta">
+      <a href="#produk" class="btn-primary">Lihat Koleksi</a>
+      <a href="#about" class="btn-outline">Tentang Kami</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track" id="marqueeTrack">
+    <span class="marquee-item">CPLUS <span>✦</span></span>
+    <span class="marquee-item">PURWAKARTA MADE <span>✦</span></span>
+    <span class="marquee-item">TOUCH OF CPLUS <span>✦</span></span>
+    <span class="marquee-item">AUTHENTIC QUALITY <span>✦</span></span>
+    <span class="marquee-item">CPLUS <span>✦</span></span>
+    <span class="marquee-item">PURWAKARTA MADE <span>✦</span></span>
+    <span class="marquee-item">TOUCH OF CPLUS <span>✦</span></span>
+    <span class="marquee-item">AUTHENTIC QUALITY <span>✦</span></span>
+  </div>
+</div>
+
+<!-- PRODUK -->
+<section id="produk">
+  <div class="container">
+    <p class="section-label">Koleksi Kami</p>
+    <h2 class="section-title">Featured Products</h2>
+
+    <div class="filter-bar" id="filterBar">
+      <button class="filter-btn active" data-filter="all">Semua</button>
+      <button class="filter-btn" data-filter="tshirt">T-Shirt</button>
+    </div>
+
+    <div class="produk-grid" id="produkGrid">
+      <!-- diisi JavaScript -->
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual">
+        <video autoplay loop muted playsinline style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 1;">
+          <source th:src="@{/vid/vidcplus.mp4}" type="video/mp4">
+          Browser Anda tidak mendukung tag video.
+        </video>
+      </div>
+      <div class="about-text">
+        <p class="section-label">Tentang Kami</p>
+        <h2 class="section-title">Dibuat dengan<br>Keberanian</h2>
+        <p>CPLUS lahir dari Purwakarta pada 2026 — dari rasa bosan dengan mode yang semua terlihat sama. Kami percaya pakaian bukan sekadar kain, tapi pernyataan.</p>
+        <p>Setiap jahitan dibuat dengan mempertimbangkan daya tahan dan identitas. Bahan premium lokal, desain yang tidak takut berbeda, dan dibuat terbatas agar kamu benar-benar punya sesuatu yang langka.</p>
+        <p>Untuk jiwa yang lelah dengan kebisingan — inilah ketenangan dalam wujud kain.</p>
+        <div class="about-stats">
+          <div>
+            <div class="stat-num">5</div>
+            <div class="stat-label">Bulan Berkarya</div>
+          </div>
+          <div>
+            <div class="stat-num">100%</div>
+            <div class="stat-label">Bahan Lokal</div>
+          </div>
+          <div>
+            <div class="stat-num">Ltd.</div>
+            <div class="stat-label">Edisi Terbatas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section id="newsletter">
+  <div class="container">
+    <div class="newsletter-wrap">
+      <p class="section-label">Tetap Terhubung</p>
+      <h2 class="newsletter-title">MASUK KE DUNIA CPLUS</h2>
+      <p class="newsletter-sub">Dapatkan info drop terbaru, restok eksklusif, dan cerita di balik setiap koleksi.</p>
+      <form class="newsletter-form" onsubmit="submitNewsletter(event)">
+        <input type="email" placeholder="Email kamu..." required />
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer id="footer">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">CPLUS<span></span></div>
+      <p class="footer-brand-desc">Pakaian untuk jiwa yang menolak biasa. Dibuat terbatas, dipakai selamanya.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Shop</div>
+      <ul class="footer-links">
+        <li><a href="#produk">T-Shirt</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Info</div>
+      <ul class="footer-links">
+        <li><a href="#about">Tentang Kami</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Kontak</div>
+      <ul class="footer-links">
+        <li><a href="#">Instagram</a></li>
+        <li><a href="#">TikTok</a></li>
+        <li><a href="#">WhatsApp</a></li>
+        <li><p style="color:var(--fg2); font-size:14px; margin-top:0.5rem; letter-spacing:1px;">Purwakarta, Jawa Barat</p></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 CPLUS. All rights reserved.</span>
+    <div class="footer-socials">
+      <a href="#">Instagram</a>
+      <a href="#">TikTok</a>
+      <a href="#">WhatsApp</a>
+    </div>
+  </div>
+</footer>
+
+<!-- CART OVERLAY -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <div class="cart-header-title">KERANJANG</div>
+    <button class="cart-close" onclick="closeCart()">×</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛒</div>
+      <p>Keranjangmu masih kosong.</p>
+    </div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none">
+    <div class="cart-total">
+      <span>Total</span>
+      <span class="cart-total-price" id="cartTotal">Rp 0</span>
+    </div>
+    <button class="btn-primary" style="width:100%; text-align:center" onclick="checkout()">
+      Checkout →
+    </button>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
+
+<script th:inline="javascript">
+  /* ── DATA PRODUK ── */
+  const dbProduk = [];
+</script>
+<script sec:authorize="hasRole('ADMIN')">
+  var globalIsAdmin = true;
+</script>
+<script sec:authorize="!hasRole('ADMIN')">
+  var globalIsAdmin = false;
+</script>
+<script th:each="p, stat : ${products}" th:inline="javascript">
+  dbProduk.push({
+    id: /*[[${p.id}]]*/ 1,
+    nama: /*[[${p.name != null ? p.name : 'Produk'}]]*/ 'NIGHTFALL',
+    tipe: 'T-Shirt',
+    harga: /*[[${p.price != null ? p.price : 0}]]*/ 189000,
+    kategori: 'tshirt',
+    stok: /*[[${p.stockS + p.stockM + p.stockL + p.stockXL}]]*/ 10,
+    stockS: /*[[${p.stockS != null ? p.stockS : 0}]]*/ 2,
+    stockM: /*[[${p.stockM != null ? p.stockM : 0}]]*/ 3,
+    stockL: /*[[${p.stockL != null ? p.stockL : 0}]]*/ 2,
+    stockXL: /*[[${p.stockXL != null ? p.stockXL : 0}]]*/ 3,
+    label: /*[[${(p.stockS + p.stockM + p.stockL + p.stockXL) > 0 ? 'new' : 'sold'}]]*/ 'new',
+    emoji: '★',
+    colorClass: 'c' + (((/*[[${stat.index}]]*/ 0) % 6) + 1),
+    imgs: [ /*[[${!#strings.isEmpty(p.imageUrl) ? p.imageUrl : '/img/tshirt_black.png'}]]*/ '/img/tshirt_black.png', /*[[${p.backImageUrl}]]*/ null ].filter(url => url != null && url.trim() !== '')
+  });
+</script>
+<script th:inline="javascript">
+
+  const staticProdukData = [
+    { id:1, nama:'NIGHTFALL', tipe:'T-Shirt', harga:189000, kategori:'tshirt', stok:10, stockS:2, stockM:3, stockL:2, stockXL:3, label:'new', emoji:'★', colorClass:'c1',
+      imgs:['/img/D1 (depan).jpeg', '/img/D1 (belakang).jpeg'] },
+    { id:2, nama:'ABYSS', tipe:'T-Shirt', harga:349000, kategori:'tshirt', stok:5, stockS:1, stockM:2, stockL:1, stockXL:1, label:'new', emoji:'◈', colorClass:'c2',
+      imgs:['/img/D2 (depan).jpeg', '/img/D2 (belakang).jpeg'] },
+    { id:4, nama:'THE GIRL', tipe:'T-Shirt', harga:219000, kategori:'tshirt', stok:0, stockS:0, stockM:0, stockL:0, stockXL:0, label:'', emoji:'⬡', colorClass:'c3',
+      imgs:['/img/D3 (depan).jpeg', '/img/D3 (belakang).jpeg'] }
+  ];
+
+  const produkData = (dbProduk && dbProduk.length > 0) ? dbProduk : staticProdukData;
+
+  const sizes = ['S','M','L','XL'];
+
+  /* ── STATE ── */
+  let cart = [];
+  let activeFilter = 'all';
+  let selectedSizes = {};
+
+  /* ── RENDER PRODUK ── */
+  function renderProduk(filter) {
+    const grid = document.getElementById('produkGrid');
+    const filtered = filter === 'all' ? produkData : produkData.filter(p => p.kategori === filter);
+    grid.innerHTML = filtered.map(p => {
+      const label = p.label === 'new'
+        ? `<div class="produk-label-new">New</div>`
+        : p.label === 'sold'
+        ? `<div class="produk-label-sold">Sold Out</div>`
+        : '';
+      let sizebtns = '';
+      let addBtn = '';
+      if (typeof globalIsAdmin !== 'undefined' && globalIsAdmin) {
+        sizebtns = `
+          <div style="background:rgba(0,0,0,0.85); padding:10px 15px; border:1px solid rgba(255,255,255,0.15); border-radius:4px; width:85%;">
+            <div style="color:var(--fg); font-size:11px; font-weight:600; letter-spacing:2px; text-align:center; margin-bottom:8px;">STOK TERSEDIA</div>
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div style="text-align:center;"><div style="font-size:10px; color:var(--fg2); margin-bottom:2px;">S</div><div style="color:var(--fg); font-size:13px; font-weight:500;">${p.stockS || 0}</div></div>
+              <div style="text-align:center;"><div style="font-size:10px; color:var(--fg2); margin-bottom:2px;">M</div><div style="color:var(--fg); font-size:13px; font-weight:500;">${p.stockM || 0}</div></div>
+              <div style="text-align:center;"><div style="font-size:10px; color:var(--fg2); margin-bottom:2px;">L</div><div style="color:var(--fg); font-size:13px; font-weight:500;">${p.stockL || 0}</div></div>
+              <div style="text-align:center;"><div style="font-size:10px; color:var(--fg2); margin-bottom:2px;">XL</div><div style="color:var(--fg); font-size:13px; font-weight:500;">${p.stockXL || 0}</div></div>
+            </div>
+          </div>
+        `;
+      } else {
+        sizebtns = p.label === 'sold' ? '' : sizes.map(s =>
+          `<button class="size-btn" onclick="selectSize(event, ${p.id}, '${s}')">${s}</button>`
+        ).join('');
+        addBtn = p.label === 'sold' ? '' :
+          `<button class="overlay-add" onclick="addToCart(event, ${p.id})">+ Keranjang</button>`;
+      }
+
+      const imgList = p.imgs && p.imgs.length > 0 ? p.imgs : null;
+      const slides = imgList
+        ? imgList.map((src, i) => `
+            <div class="slide ${i === 0 ? 'active' : ''}">
+              <img src="${src}" alt="${p.nama} ${i+1}"
+                onerror="this.style.display='none';this.parentElement.innerHTML='<div class=\\'slide-placeholder ${p.colorClass}\\'>${p.emoji}</div>'"
+              />
+            </div>`).join('')
+        : `<div class="slide active"><div class="slide-placeholder ${p.colorClass}">${p.emoji}</div></div>`;
+
+      const total = imgList ? imgList.length : 1;
+      const dots = total > 1
+        ? `<div class="slide-dots">${imgList.map((_, i) =>
+            `<div class="slide-dot ${i===0?'active':''}"></div>`).join('')}</div>`
+        : '';
+      const prog = total > 1 ? `<div class="slide-progress"></div>` : '';
+
+      return `
+        <div class="produk-card" data-id="${p.id}" data-slide="0" data-total="${total}">
+          <div class="produk-img">
+            <div class="slide-wrap">${slides}</div>
+            ${label}${dots}${prog}
+            <div class="produk-overlay">
+              <div class="overlay-sizes">${sizebtns}</div>
+              ${addBtn}
+            </div>
+          </div>
+          <div class="produk-info">
+            <div>
+              <div class="produk-name">${p.nama}</div>
+              <div class="produk-type">${p.tipe}</div>
+            </div>
+            <div class="produk-price">Rp ${p.harga.toLocaleString('id-ID')}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    document.querySelectorAll('.produk-card').forEach(card => startSlideshow(card));
+  }
+
+  /* ── SLIDESHOW ENGINE ── */
+  const SLIDE_INTERVAL = 2500;
+  const slideshowTimers = {};
+
+  function animateProgress(card) {
+    const prog = card.querySelector('.slide-progress');
+    if (!prog) return;
+    prog.style.transition = 'none'; prog.style.width = '0%';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      prog.style.transition = `width ${SLIDE_INTERVAL}ms linear`;
+      prog.style.width = '100%';
+    }));
+  }
+
+  function goToSlide(card, idx) {
+    card.querySelectorAll('.slide').forEach((s, i) => s.classList.toggle('active', i === idx));
+    card.querySelectorAll('.slide-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+    card.dataset.slide = idx;
+    animateProgress(card);
+  }
+
+  function startSlideshow(card) {
+    const id = card.dataset.id;
+    const total = parseInt(card.dataset.total);
+    if (total <= 1) return;
+    clearInterval(slideshowTimers[id]);
+    animateProgress(card);
+    slideshowTimers[id] = setInterval(() => {
+      const current = parseInt(card.dataset.slide);
+      goToSlide(card, (current + 1) % total);
+    }, SLIDE_INTERVAL);
+  }
+
+  /* ── FILTER ── */
+  document.getElementById('filterBar').addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeFilter = btn.dataset.filter;
+    renderProduk(activeFilter);
+  });
+
+  /* ── SIZE SELECT ── */
+  function selectSize(e, id, size) {
+    e.stopPropagation();
+    selectedSizes[id] = size;
+    const card = document.querySelector(`[data-id="${id}"]`);
+    card.querySelectorAll('.size-btn').forEach(b => {
+      b.style.background = b.textContent === size ? 'var(--accent)' : '';
+      b.style.borderColor = b.textContent === size ? 'var(--accent)' : '';
+      b.style.color = b.textContent === size ? '#000' : '';
+    });
+  }
+
+  /* ── CART ── */
+  function addToCart(e, id) {
+    e.stopPropagation();
+    const size = selectedSizes[id];
+    if (!size) { showNotif('Pilih ukuran dulu!'); return; }
+    
+    // Submit ke Spring Boot Backend (CartController)
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/cart/add';
+    
+    const idInput = document.createElement('input');
+    idInput.type = 'hidden';
+    idInput.name = 'productId';
+    idInput.value = id;
+    
+    const sizeInput = document.createElement('input');
+    sizeInput.type = 'hidden';
+    sizeInput.name = 'size';
+    sizeInput.value = size;
+    
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = /*[[${_csrf.parameterName}]]*/ '_csrf';
+    csrfInput.value = /*[[${_csrf.token}]]*/ '';
+    
+    form.appendChild(idInput);
+    form.appendChild(sizeInput);
+    form.appendChild(csrfInput);
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  function removeFromCart(id, size) {
+    cart = cart.filter(c => !(c.id === id && c.size === size));
+    updateCart();
+  }
+
+  function updateCart() {
+    const count = cart.reduce((a, c) => a + c.qty, 0);
+    const cartCountEl = document.getElementById('cartCount');
+    
+    // We update UI cart count. In a real app this would sync with backend.
+    cartCountEl.textContent = count;
+    
+    const total = cart.reduce((a, c) => a + c.harga * c.qty, 0);
+    document.getElementById('cartTotal').textContent = `Rp ${total.toLocaleString('id-ID')}`;
+    const container = document.getElementById('cartItems');
+    const footer = document.getElementById('cartFooter');
+    if (cart.length === 0) {
+      container.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p>Keranjangmu masih kosong.</p></div>`;
+      footer.style.display = 'none';
+    } else {
+      container.innerHTML = cart.map(c => `
+        <div class="cart-item">
+          <div class="cart-item-img">${c.emoji}</div>
+          <div class="cart-item-info">
+            <div class="cart-item-name">${c.nama}</div>
+            <div class="cart-item-size">${c.tipe} / ${c.size} × ${c.qty}</div>
+            <div class="cart-item-price">Rp ${(c.harga * c.qty).toLocaleString('id-ID')}</div>
+          </div>
+          <button class="cart-item-remove" onclick="removeFromCart(${c.id}, '${c.size}')">×</button>
+        </div>
+      `).join('');
+      footer.style.display = 'block';
+    }
+  }
+
+  function openCart() { }
+  function closeCart() { }
+  function checkout() { }
+
+  /* ── NOTIF ── */
+  let notifTimer;
+  function showNotif(msg) {
+    const el = document.getElementById('notif');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(notifTimer);
+    notifTimer = setTimeout(() => el.classList.remove('show'), 2800);
+  }
+
+  /* ── NEWSLETTER ── */
+  function submitNewsletter(e) {
+    e.preventDefault();
+    showNotif('Berhasil subscribe! Terima kasih 🖤');
+    e.target.reset();
+  }
+
+  /* ── MOBILE MENU ── */
+  document.getElementById('menuBtn').addEventListener('click', () => {
+    document.getElementById('mobileMenu').classList.toggle('open');
+    document.body.style.overflow =
+      document.getElementById('mobileMenu').classList.contains('open') ? 'hidden' : '';
+  });
+  function closeMobileMenu() {
+    document.getElementById('mobileMenu').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  /* ── NAVBAR SHADOW ON SCROLL ── */
+  window.addEventListener('scroll', () => {
+    document.querySelector('nav').style.boxShadow =
+      window.scrollY > 20 ? '0 4px 40px rgba(0,0,0,0.6)' : 'none';
+  });
+
+  /* ── INIT ── */
+  renderProduk('all');
+</script>
+</body>
+</html>
